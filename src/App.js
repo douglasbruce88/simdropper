@@ -1,49 +1,21 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend
-} from "recharts";
-
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import Center from "react-center";
+import { bondData, equityData } from "./Data.js";
 const { List } = require("immutable");
 
 const emptyData = List([
-  { name: "-10%", numSims: 0 },
-  { name: "-5%", numSims: 0 },
-  { name: "0%", numSims: 0 },
-  { name: "5%", numSims: 0 },
-  { name: "10%", numSims: 0 },
-  { name: "15%", numSims: 0 },
-  { name: "20%", numSims: 0 }
-]);
-
-const data = List([
-  { name: "-10%", numSims: 1 },
-  { name: "-5%", numSims: 1 },
-  { name: "0%", numSims: 1 },
-  { name: "5%", numSims: 1 },
-  { name: "5%", numSims: 1 },
-  { name: "0%", numSims: 1 },
-  { name: "15%", numSims: 1 },
-  { name: "-5%", numSims: 1 },
-  { name: "20%", numSims: 1 },
-  { name: "0%", numSims: 1 },
-  { name: "-5%", numSims: 1 },
-  { name: "0%", numSims: 1 },
-  { name: "5%", numSims: 1 },
-  { name: "0%", numSims: 1 },
-  { name: "15%", numSims: 1 },
-  { name: "-10%", numSims: 1 },
-  { name: "-5%", numSims: 1 },
-  { name: "5%", numSims: 1 },
-  { name: "20%", numSims: 1 },
-  { name: "0%", numSims: 1 }
+  { name: -20, numSims: 0 },
+  { name: -15, numSims: 0 },
+  { name: -10, numSims: 0 },
+  { name: -5, numSims: 0 },
+  { name: 0, numSims: 0 },
+  { name: 5, numSims: 0 },
+  { name: 10, numSims: 0 },
+  { name: 15, numSims: 0 },
+  { name: 20, numSims: 0 }
 ]);
 
 var paddedStyle = {
@@ -57,7 +29,7 @@ class SimpleBarChart extends Component {
   }
 
   getData = () => {
-    const fulldata = emptyData.concat(data);
+    const fulldata = emptyData.concat(equityData);
     const finalData = fulldata
       .take(emptyData.count() + this.state.numberOfSimulations)
       .groupBy(x => x.name)
@@ -89,19 +61,19 @@ class SimpleBarChart extends Component {
           Number of simulations: {this.state.numberOfSimulations}
         </div>
         <button style={paddedStyle} onClick={this.reset}>Reset</button>
-        <BarChart
-          onClick={this.addSim}
-          width={600}
-          height={300}
-          data={this.getData()}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <XAxis dataKey="name" />
-          <YAxis type="number" domain={[0, 10]} interval="1" />
-          <CartesianGrid strokeDasharray="3 3" />
-          <Legend />
-          <Bar isAnimationActive="false" dataKey="numSims" fill="#8884d8" />
-        </BarChart>
+        <Center>
+          <BarChart
+            width={700}
+            height={400}
+            onClick={this.addSim}
+            data={this.getData()}
+          >
+            <XAxis dataKey="name" />
+            <YAxis type="number" domain={[0, 10]} />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Bar isAnimationActive={false} dataKey="numSims" fill="#8884d8" />
+          </BarChart>
+        </Center>
       </div>
     );
   }

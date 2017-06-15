@@ -5,6 +5,7 @@
   "dependencies": {
     "immutable": "^3.8.1",
     "react": "^15.5.4",
+    "react-center": "^1.1.1",
     "react-dom": "^15.5.4",
     "recharts": "^1.0.0-alpha.1"
   },
