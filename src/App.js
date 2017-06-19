@@ -25,18 +25,23 @@ var paddedStyle = {
 class SimpleBarChart extends Component {
   constructor(props) {
     super(props);
-    this.state = { numberOfSimulations: 0 };
+    this.state = { numberOfSimulations: 0, maxSims: equityData.count() };
   }
 
   getData = () => {
     const fulldata = emptyData.concat(equityData);
+    const newestSimBucket = this.state.numberOfSimulations >= this.state.maxSims
+      ? 0
+      : equityData.skip(this.state.numberOfSimulations - 1).first().name
+    const first = this.state.numberOfSimulations === 0;
     const finalData = fulldata
-      .take(emptyData.count() + this.state.numberOfSimulations)
+      .take(first ? emptyData.count() : emptyData.count() + this.state.numberOfSimulations - 1)
       .groupBy(x => x.name)
-      .map(function(x) {
+      .map(function (x) {
         return {
           name: x.first().name,
-          numSims: x.reduce((acc, elem) => acc + elem.numSims, 0)
+          numSims: x.reduce((acc, elem) => acc + elem.numSims, 0),
+          newestSim: first ? 0 : x.first().name === newestSimBucket
         };
       });
     return finalData.toArray();
@@ -44,7 +49,7 @@ class SimpleBarChart extends Component {
 
   addSim = evt => {
     this.setState((prevState, props) => ({
-      numberOfSimulations: prevState.numberOfSimulations + 1
+      numberOfSimulations: Math.min(prevState.maxSims, prevState.numberOfSimulations + 1)
     }));
   };
 
@@ -71,7 +76,8 @@ class SimpleBarChart extends Component {
             <XAxis dataKey="name" />
             <YAxis type="number" domain={[0, 10]} />
             <CartesianGrid strokeDasharray="3 3" />
-            <Bar isAnimationActive={false} dataKey="numSims" fill="#8884d8" />
+            <Bar isAnimationActive={false} stackId="a" dataKey="numSims" fill="#8884d8" />
+            <Bar isAnimationActive={false} stackId="a" dataKey="newestSim" fill="#82ca9d" />
           </BarChart>
         </Center>
       </div>
