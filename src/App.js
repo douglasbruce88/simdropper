@@ -1,47 +1,56 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import Center from "react-center";
-import { bondData, equityData } from "./Data.js";
-const { List } = require("immutable");
-
-const emptyData = List([
-  { name: -20, numSims: 0 },
-  { name: -15, numSims: 0 },
-  { name: -10, numSims: 0 },
-  { name: -5, numSims: 0 },
-  { name: 0, numSims: 0 },
-  { name: 5, numSims: 0 },
-  { name: 10, numSims: 0 },
-  { name: 15, numSims: 0 },
-  { name: 20, numSims: 0 }
-]);
+import { Data } from "./Data.js";
 
 var paddedStyle = {
   margin: "10px 10px 10px 0"
 };
 
+const colours = [
+  "#FF0000",
+  "#FF2300",
+  "#FF4600",
+  "#FF6900",
+  "#FF8C00",
+  "#FFAF00",
+  "#FFD300",
+  "#FFF600",
+  "#E5FF00",
+  "#C2FF00",
+  "#9FFF00",
+  "#7CFF00",
+  "#58FF00",
+  "#35FF00",
+  "#12FF00",
+  "#00FF00",
+  "#00FF00",
+  "#00FF00",
+  "#00FF00"]
+
 class SimpleBarChart extends Component {
   constructor(props) {
     super(props);
-    this.state = { numberOfSimulations: 0, maxSims: equityData.count() };
+    this.state = { numberOfSimulations: 0, maxSims: Data.get("equity").count() };
   }
 
-  getData = () => {
-    const fulldata = emptyData.concat(equityData);
+  getData = (setToUse) => {
+    const datasetToUse = Data.get(setToUse)
+    const emptyData = Data.get("empty")
     const newestSimBucket = this.state.numberOfSimulations >= this.state.maxSims
       ? 0
-      : equityData.skip(this.state.numberOfSimulations - 1).first().name
+      : datasetToUse.skip(this.state.numberOfSimulations - 1).first()
     const first = this.state.numberOfSimulations === 0;
-    const finalData = fulldata
+    const finalData = emptyData.concat(datasetToUse)
       .take(first ? emptyData.count() : emptyData.count() + this.state.numberOfSimulations - 1)
-      .groupBy(x => x.name)
+      .groupBy(x => x)
       .map(function (x) {
         return {
-          name: x.first().name,
-          numSims: x.reduce((acc, elem) => acc + elem.numSims, 0),
-          newestSim: first ? 0 : x.first().name === newestSimBucket
+          name: x.first(),
+          numSims: x.count() - 1,
+          newestSim: first ? 0 : x.first() === newestSimBucket
         };
       });
     return finalData.toArray();
@@ -66,18 +75,45 @@ class SimpleBarChart extends Component {
           Number of simulations: {this.state.numberOfSimulations}
         </div>
         <button style={paddedStyle} onClick={this.reset}>Reset</button>
+        <br />
+        <span style={{ display: "inline-block", marginRight: "300px" }}>Global Equities</span>
+        <span style={{ display: "inline-block", marginLeft: "300px" }}>SJP Strategic Income</span>
         <Center>
           <BarChart
             width={700}
             height={400}
             onClick={this.addSim}
-            data={this.getData()}
+            data={this.getData("equity")}
           >
             <XAxis dataKey="name" />
-            <YAxis type="number" domain={[0, 10]} />
+            <YAxis type="number" domain={[0, 20]} />
             <CartesianGrid strokeDasharray="3 3" />
-            <Bar isAnimationActive={false} stackId="a" dataKey="numSims" fill="#8884d8" />
-            <Bar isAnimationActive={false} stackId="a" dataKey="newestSim" fill="#82ca9d" />
+            <Bar isAnimationActive={false} stackId="a" dataKey="numSims">
+              {
+                this.getData("sjp").map((entry, index) => (
+                  <Cell cursor="pointer" fill={colours[index]} key={`cell-${index}`} />
+                ))
+              }
+            </Bar>
+            <Bar isAnimationActive={false} stackId="a" dataKey="newestSim" fill="#8884d8" />
+          </BarChart>
+          <BarChart
+            width={700}
+            height={400}
+            onClick={this.addSim}
+            data={this.getData("sjp")}
+          >
+            <XAxis dataKey="name" />
+            <YAxis type="number" domain={[0, 20]} />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Bar isAnimationActive={false} stackId="a" dataKey="numSims">
+              {
+                this.getData("sjp").map((entry, index) => (
+                  <Cell cursor="pointer" fill={colours[index]} key={`cell-${index}`} />
+                ))
+              }
+            </Bar>
+            <Bar isAnimationActive={false} stackId="a" dataKey="newestSim" fill="#8884d8" />
           </BarChart>
         </Center>
       </div>
