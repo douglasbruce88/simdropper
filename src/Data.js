@@ -1,7 +1,6 @@
 const { List, Map } = require("immutable");
 
 const emptyData = List([
-  "£6,500",
   "£7,000",
   "£7,500",
   "£8,000",
@@ -16,8 +15,7 @@ const emptyData = List([
   "£12,500",
   "£13,000",
   "£13,500",
-  "£14,000",
-  "£14,500"
+  "£14,000"
 ]);
 
 const equityData = List([
@@ -33,7 +31,7 @@ const equityData = List([
   "£9,500",
   "£9,000",
   "£10,500",
-  "£14,500",
+  "£14,000",
   "£10,000",
   "£11,000",
   "£10,500",
@@ -55,7 +53,7 @@ const equityData = List([
   "£11,000",
   "£11,000",
   "£8,000",
-  "£6,500",
+  "£7,000",
   "£10,000",
   "£8,000",
   "£12,500",
@@ -126,6 +124,10 @@ const sjpData = List([
   "£10,000"
 ]);
 
-const Data = Map([["empty", emptyData], ["equity", equityData], ["sjp", sjpData]])
+const Data = Map([
+  ["empty", emptyData],
+  ["equity", equityData],
+  ["sjp", sjpData]
+]);
 
 export { Data };
